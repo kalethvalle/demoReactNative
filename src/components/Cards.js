@@ -123,6 +123,7 @@ export default class MisCards extends Component{
                     placeholder="Buscar"
                     onChangeText={this.updateSearch}
                     onClear={this.clearSearch}
+                    lightTheme
                     value={search}
                 />
 

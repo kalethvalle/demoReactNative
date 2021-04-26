@@ -13,8 +13,12 @@ import {
 } from 'react-native';
 import { Button, Text, Overlay, AirbnbRating, Badge, } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as  actions from  '../store/actions'
+import { connect } from 'react-redux'
+
 /* Componentes */
 import OpenURLButton from './OpenURLButton';
+import Loading from './Loading'
 
 class Separator extends Component{
     render(){
@@ -24,13 +28,13 @@ class Separator extends Component{
     }
 };
 
-export default class About extends Component{
+class Animes extends Component{
     state = {
         animes: [],
         show_animating: false,
         visible: false,
         pag: 0,
-        Anime: {},
+        
     }
 
     toggleOverlay = (anime) => {
@@ -42,6 +46,18 @@ export default class About extends Component{
 
     setAnime = (payload) => {
         this.setState({animes: payload})
+    }
+
+    setCartAnime = (payload) => {
+        let anime_cart = this.props.cart_anime
+        anime_cart.push(payload)
+
+        const index = this.state.animes.indexOf(payload);
+        
+        this.state.animes.splice(index, 1);
+
+        this.props.function_cart_anime(anime_cart)
+        this.props.additionCart()
     }
 
     setAnimating = (payload) => {
@@ -106,10 +122,8 @@ export default class About extends Component{
       return(
         <SafeAreaView style={styles.container}>
             {this.state.show_animating ?
-                <ActivityIndicator
-                    size="large"
-                    color="#999"
-                    animating={this.state.show_animating}
+                <Loading 
+                  loading={this.state.show_animating} 
                 /> : 
                     <View style={styles.viewBtn}> 
                         <Button
@@ -149,7 +163,6 @@ export default class About extends Component{
                     </View>
             }
             <ScrollView >
-
                 {this.state.animes.map((anime, index) => {
                     return(
                         <View style={styles.card} key={index} >
@@ -200,6 +213,8 @@ export default class About extends Component{
 
                                     <Button
                                         buttonStyle={{borderRadius: 10}}
+                                        title="Add  "
+                                        onPress={() => this.setCartAnime(anime)}
                                         icon={
                                             < Icon
                                                 name="cart-plus"
@@ -209,7 +224,6 @@ export default class About extends Component{
                                             />
                                         }
                                         iconRight
-                                        title="Add  "
                                     />
                                 </View>
                             </View>
@@ -277,3 +291,14 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
 });
+
+const mapStateToProps = state =>{
+    return(
+        {
+            counterCart: state.counterCart,
+            cart_anime: state.cart_anime,
+        }
+    )
+}
+
+export default connect(mapStateToProps, actions)(Animes)
